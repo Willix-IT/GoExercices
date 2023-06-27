@@ -32,6 +32,7 @@ func applyBlurFilter(srcPath, destPath string) error {
 func applyFilter(srcPath, destPath string, filterFunc func(srcImage image.Image) *image.NRGBA) error {
 	srcImage, err := imaging.Open(srcPath)
 	if err != nil {
+		fmt.Printf("Error opening image from %s: %s\n", srcPath, err.Error())
 		return err
 	}
 
@@ -39,6 +40,7 @@ func applyFilter(srcPath, destPath string, filterFunc func(srcImage image.Image)
 
 	err = imaging.Save(filteredImage, destPath)
 	if err != nil {
+		fmt.Printf("Error saving image to %s: %s\n", destPath, err.Error())
 		return err
 	}
 
@@ -86,13 +88,15 @@ func processImagesWithWaitGroup(srcPath, destPath string, filter ImageFilter, fi
 		case fileName, ok := <-done:
 			if ok {
 				fmt.Printf("Finished processing: %s\n", fileName)
+			} else {
+				return
 			}
 		case err, ok := <-errs:
 			if ok {
 				fmt.Println(err)
+			} else {
+				return
 			}
-		default:
-			return
 		}
 	}
 }
@@ -126,8 +130,6 @@ func processImagesWithChannel(srcPath, destPath string, filter ImageFilter, file
 			if ok {
 				fmt.Println(err)
 			}
-		default:
-			return
 		}
 	}
 }
