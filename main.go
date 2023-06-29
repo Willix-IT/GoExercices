@@ -125,10 +125,14 @@ func processImagesWithChannel(srcPath, destPath string, filter ImageFilter, file
 		case fileName, ok := <-done:
 			if ok {
 				fmt.Printf("Finished processing: %s\n", fileName)
+			} else {
+				return
 			}
 		case err, ok := <-errs:
 			if ok {
 				fmt.Println(err)
+			} else {
+				return
 			}
 		}
 	}
@@ -143,7 +147,7 @@ func main() {
 	flag.Parse()
 
 	if *srcPath == "" || *destPath == "" || *filterStr == "" || *task == "" {
-		fmt.Println("Usage: imggo -src <source_folder> -dst <destination_folder> -filter <filter_type> -task <task_method>")
+		fmt.Println("Usage: go run -src <source_folder> -dst <destination_folder> -filter <filter_type> -task <task_method>")
 		return
 	}
 
